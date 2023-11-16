@@ -428,6 +428,36 @@ class layer_models:
                 writer.writerow([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
         f.close()
         return
+    
+    def save_to_param(self, skipLast = False, step=2, prefix=''):
+        y = 0.02
+        result = []
+        for o in range(len(self.models)):
+            modelsThiknes = []
+            for i in range(len(self.models[0][0])):
+                if i%step:
+                    continue
+                counter = 0
+                layercounter = 0
+                thikness = []
+                for j in range(len(self.models[0])):
+                    if (self.models[o][j][i] != self.layerValuesSave[o][layercounter]):
+                        if (self.layerValuesSave[o].index(self.models[o][j][i]) >= layercounter):
+                            thikness.append(round(counter, 2))
+                            layercounter += 1
+                    counter += y
+                if (not skipLast):
+                    thikness.append(round(counter, 2))
+                modelsThiknes.append(thikness)
+            modelsThiknes = np.transpose(modelsThiknes)
+
+            if (not self.LSave):
+                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, 'nan', 'nan', 'nan', 'nan'])
+            elif (self.shiftCount == 2):
+                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, self.LSave[o][0], self.YstartSave[o][0], self.LSave[o][1], self.YstartSave[o][1]])
+            else:
+                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
+        return result
 
 
 # if __name__ == "__main__":

@@ -3,22 +3,41 @@ from django.http import JsonResponse
 from backend.models_genearateor.main import layer_models
 
 def main(request):
-    models = layer_models(N=1, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[35, 89], [75, 114], [95, 129], [1000, 1000]], withoutShift=True)
+    models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], side=0, shiftType=0)
 
-    print(models.models)
+    result = models.save_to_param(skipLast = True, prefix='RL0', step=1)
 
-    data = models.models
+    print(request)
 
-    for i in range(len(data)):
-        data[i] = data[i].tolist()
+    if request.method == "GET":
+        models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], side=0, shiftType=0)
+        result = models.save_to_param(skipLast = True, prefix='RL0', step=1)
 
-    print(type(data[0]).__module__)
+        response_data = {}
+        response_data['result'] = result
+        response_data['message'] = '1231312312321'
 
+    elif request.method == "POST":
+        print(request.body)
+        pass
+
+
+    # print(models.models)
+    # data = models.models
+    # for i in range(len(data)):
+    #     data[i] = data[i].tolist()
+    # print(type(data[0]).__module__)
     # dataNew = data.tolist()
-
     # print(type(dataNew))
 
     response_data = {}
-    response_data['result'] = data
+    response_data['result'] = result
     response_data['message'] = '1231312312321'
-    return JsonResponse(response_data)
+
+    response = JsonResponse(response_data)
+
+    response["Access-Control-Allow-Origin"] = "http://localhost:3000"
+    response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response["Access-Control-Max-Age"] = "1000"
+    response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
+    return response
