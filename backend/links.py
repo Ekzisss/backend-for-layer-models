@@ -5,17 +5,16 @@ from backend.models_genearateor.main import layer_models
 def main(request):
     models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], side=0, shiftType=0)
 
-    result = models.save_to_param(skipLast = True, prefix='RL0', step=1)
+    result = models.save_to_param(skipLast = True, step=1)
 
     print(request)
 
     if request.method == "GET":
-        models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], side=0, shiftType=0)
-        result = models.save_to_param(skipLast = True, prefix='RL0', step=1)
+        models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
+        result = models.save_to_param(skipLast = True, step=1)
 
         response_data = {}
         response_data['result'] = result
-        response_data['message'] = '1231312312321'
 
     elif request.method == "POST":
         print(request.body)
@@ -32,7 +31,6 @@ def main(request):
 
     response_data = {}
     response_data['result'] = result
-    response_data['message'] = '1231312312321'
 
     response = JsonResponse(response_data)
 

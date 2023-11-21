@@ -429,7 +429,7 @@ class layer_models:
         f.close()
         return
     
-    def save_to_param(self, skipLast = False, step=2, prefix=''):
+    def save_to_param(self, skipLast = False, step=2):
         y = 0.02
         result = []
         for o in range(len(self.models)):
@@ -452,11 +452,11 @@ class layer_models:
             modelsThiknes = np.transpose(modelsThiknes)
 
             if (not self.LSave):
-                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, 'nan', 'nan', 'nan', 'nan'])
+                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2] , 'nan', 'nan', 'nan', 'nan'])
             elif (self.shiftCount == 2):
-                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, self.LSave[o][0], self.YstartSave[o][0], self.LSave[o][1], self.YstartSave[o][1]])
+                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2] , self.LSave[o][0], self.YstartSave[o][0], self.LSave[o][1], self.YstartSave[o][1]])
             else:
-                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
+                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
         return result
 
 
