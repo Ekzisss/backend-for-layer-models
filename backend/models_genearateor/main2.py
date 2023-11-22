@@ -75,65 +75,65 @@ class layer_models:
         - scatterPeriod - scatter period (default = 5)
         - smoothness - smooth scatter
         - scatterAmount - height of scatter (only in smooth mode)
-        """ 
+        """
         if (len(self.layerThickness) < self.layerCount):
             val = round(np.random.uniform(self.NY/9, self.NY/6))
-            self.layerThickness = [val]
+            layerThickness = [val]
             tempsum = val
             for i in range(self.layerCount - 1):
-                temp2 = self.NY - self.layerThickness[0]
+                temp2 = self.NY - layerThickness[0]
                 temp = round(np.random.uniform(temp2/10, abs((temp2/2.5) * (temp2 - tempsum)/temp2) + temp2/10))
-                self.layerThickness.append(temp)
+                layerThickness.append(temp)
                 tempsum +=temp
                 if (tempsum > self.NY - self.NY/5):
                     break
             while True:
-                if (self.layerCount != len(self.layerThickness)):
-                    index = np.argmax(self.layerThickness)
-                    val = round(self.layerThickness[index]/2)
-                    self.layerThickness[index] = val
-                    self.layerThickness.append(val)
+                if (self.layerCount != len(layerThickness)):
+                    index = np.argmax(layerThickness)
+                    val = round(layerThickness[index]/2)
+                    layerThickness[index] = val
+                    layerThickness.append(val)
                 else: break
 
 
         if (len(self.layerValues) < self.layerCount):
-            self.layerValues = []
+            layerValues = []
             temp = 1
             for i in range(self.layerCount):
                 temp += random.randint(10, 30)
-                self.layerValues.append(temp)
+                layerValues.append(temp)
 
         currentLayer = 0
         scatter = 0
 
-        self.upperValue = self.layerValues[0]
-        self.downValue = self.layerValues[len(self.layerValues)-1]
-        self.layerValuesSave.append(self.layerValues)
+        self.upperValue = layerValues[0]
+        self.downValue = layerValues[len(layerValues)-1]
+        self.layerValuesSave.append(layerValues)
 
         model = np.empty(shape=(self.NY,self.NX))
 
         if (self.smoothness):
-            if not self.scatterAmount:
-                self.scatterAmount = []
+            if not scatterAmount:
+                scatterAmount = []
                 for i in range(random.randint(2,3)):
-                    self.scatterAmount.append(random.randint(self.NY/10, self.NY/5) * (1 if random.random() < 0.5 else -1))
-            model.fill(self.layerValues[0])
+                    scatterAmount.append(random.randint(self.NY/10, self.NY/5) * (1 if random.random() < 0.5 else -1))
+            model.fill(layerValues[0])
 
             temp = 0
 
-            for o in range(len(self.layerThickness) - 1):
-                temp += self.layerThickness[o]
+            for o in range(len(layerThickness) - 1):
+                temp += layerThickness[o]
 
                 arrY = [temp]
-                for i in range(len(self.scatterAmount)):
-                    arrY.append(temp + self.scatterAmount[i])
+                for i in range(len(scatterAmount)):
+                    arrY.append(temp + scatterAmount[i])
 
                 for i in range(self.NY):
                     for j in range(self.NX):
                         temp1 = j/self.NX
                         y = self.bezier_curves(temp1, arrY)
                         if (i > y):
-                            model[i][j] = self.layerValues[o + 1]
+                            model[i][j] = layerValues[o + 1]
         else:
             if self.sole:
                 prevSole = []
@@ -155,28 +155,28 @@ class layer_models:
                         if (counter >= tempSole[currentValue]):
                             currentValue += 1
                             # counter = 0
-                        model[j][i] = self.layerValues[currentValue]
+                        model[j][i] = layerValues[currentValue]
                         counter +=1
                     prevSole = tempSole
             else:
-                tempThickness = self.layerThickness[:]
+                tempThickness = layerThickness[:]
 
-                if (self.scatterMaxValue is not list):
-                    self.scatterMaxValue = np.full(shape=self.layerCount,  fill_value = self.scatterMaxValue)
+                if (scatterMaxValue is not list):
+                    scatterMaxValue = np.full(shape=self.layerCount,  fill_value = scatterMaxValue)
 
                 for i in range(self.NY):
                     tempThickness[currentLayer] -= 1
-                    if (tempThickness[currentLayer] == 0 and len(self.layerValues) - 1 > currentLayer):
+                    if (tempThickness[currentLayer] == 0 and len(layerValues) - 1 > currentLayer):
                         currentLayer +=1
                     for j in range(self.NX):
                         if (j%self.scatterPeriod == 0):
-                            scatter = random.randint(0,self.scatterMaxValue[currentLayer])
+                            scatter = random.randint(0,scatterMaxValue[currentLayer])
                         for u in range(scatter):
                             if i-u >= self.NY:
                                 continue
-                            model[i-u][j] = self.layerValues[currentLayer]
+                            model[i-u][j] = layerValues[currentLayer]
                         if scatter == 0:
-                            model[i][j] = self.layerValues[currentLayer]
+                            model[i][j] = layerValues[currentLayer]
             
         return model
 
@@ -209,7 +209,6 @@ class layer_models:
 
         shiftType = self.shiftType
         L = self.L
-        if shiftForce == None: shiftForce = 15
 
         if shiftType == None:
             shiftType = random.randint(0,1)
@@ -372,7 +371,8 @@ class layer_models:
         if len(self.models) == 1:
             figure, axis = plt.subplots(1, 1)
 
-            axis.imshow(self.models[0], cmap)
+            axis.imshow(np.flip(self.models[0], axis=0), cmap)
+            axis.set_ylim([0, 800])
 
             plt.show()
             return
@@ -420,8 +420,6 @@ class layer_models:
                 modelsThiknes.append(thikness)
             modelsThiknes = np.transpose(modelsThiknes)
 
-            print(modelsThiknes)
-
             if (not self.LSave):
                 writer.writerow([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, 'nan', 'nan', 'nan', 'nan'])
             elif (self.shiftCount == 2):
@@ -465,19 +463,19 @@ class layer_models:
 
 
 # if __name__ == "__main__":
-    # models = layer_models(N = 1, smoothness=True, multiprocess=False, L=-40, side=0, shiftType=0, Y=750, NX=2000, NY=800, shiftForce=200, 
-    #                       layerCount=5, layerThickness=[120,83,83,83,1000], scatterAmount=[200,-50])
-#     models = layer_models(N=9, smoothness=True, shiftCount=2, side=[0,1], Y=[40,80], shiftType=0, L=[30,-30])
-#     models = layer_models(N=1, NY=60, NX=120, smoothness=True, side = 1, shiftType=0, shiftCount=2, L=10)
-#     models = layer_models(N=1, NX=300, smoothness=True, scatterMaxValue=10, shiftCount=7, L=[30, 40, -30, 0, -10, 5, -14], Y=[20,50,100,130,180,200,250], shiftForce=10)
-#     models = layer_models(N=5000, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=30, side=0, shiftType=0)
-#     models = layer_models(N=5000, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=15, shiftCount=2, side=[0, 1], shiftType=1, L=[5, -5], Y=[3,12], layerValues=[0, 20, 40,])
-    # models = layer_models(N=1, NX=150, NY=150, layerCount=4, side=0, shiftType=1)
+#     # models = layer_models(N = 1, smoothness=True, multiprocess=False, L=-40, side=0, shiftType=0, Y=750, NX=2000, NY=800, shiftForce=200, 
+#     #                       layerCount=5, layerThickness=[120,83,83,83,1000], scatterAmount=[200,-50])
+#     # models = layer_models(N=9, smoothness=True, shiftCount=2, side=[0,1], Y=[40,80], shiftType=0, L=[30,-30])
+#     # models = layer_models(N=1, NY=60, NX=120, smoothness=True, side = 1, shiftType=0, shiftCount=2, L=10)
+#     # models = layer_models(N=1, NX=300, smoothness=True, scatterMaxValue=10, shiftCount=7, L=[30, 40, -30, 0, -10, 5, -14], Y=[20,50,100,130,180,200,250], shiftForce=10)
+#     # models = layer_models(N=5000, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=30, side=0, shiftType=0)
+#     # models = layer_models(N=5000, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=15, shiftCount=2, side=[0, 1], shiftType=1, L=[5, -5], Y=[3,12], layerValues=[0, 20, 40,])
+#     # models = layer_models(N=2, NX=150, NY=150, layerCount=4, side=0, shiftType=1)
 
 
 
 
-#     models = layer_models(N=1, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[35, 89], [75, 114], [95, 129], [1000, 1000]], withoutShift=True)
+#     models = layer_models(N=3000, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[35, 89], [75, 114], [95, 129], [1000, 1000]], withoutShift=True)
 #     models.save(name='DataBasemmm.csv' ,skipLast = True, prefix='RL0', step=1)
 #     models = layer_models(N=500, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], side=0, shiftType=0)
 #     models.save(name='DataBasemmm.csv' ,skipLast = True, prefix='L1', step=1)
@@ -494,7 +492,7 @@ class layer_models:
 #     models = layer_models(N=500, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], shiftCount=2, side=[0, 1], shiftType=0)
 #     models.save(name='DataBasemmm.csv' ,skipLast = True, prefix='LR2v', step=1)
 
-    # models.show(limit=1)
+#     models.show(limit=2)
 
 
 # Smooth               ; With multiprocess (16 cores)

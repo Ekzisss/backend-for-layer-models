@@ -1,24 +1,56 @@
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from backend.models_genearateor.main import layer_models
 
+import json
+
+@csrf_exempt 
 def main(request):
-    models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[5,15], side=0, shiftType=0)
-
-    result = models.save_to_param(skipLast = True, step=1)
-
-    print(request)
-
+    result = []
+    print(123)
     if request.method == "GET":
-        models = layer_models(N=10, NX=15, NY=300, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
+        models = layer_models(N=1, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
         result = models.save_to_param(skipLast = True, step=1)
+
+        # models.show(limit=2)
 
         response_data = {}
         response_data['result'] = result
 
     elif request.method == "POST":
-        print(request.body)
-        pass
+        data = json.loads(request.body)
+        print(data['generationType'])
+
+        match data['generationType']:
+            case 0:
+                del data['scatterAmount']
+                del data['sole']
+            case 1:
+                print(999)
+                del data['scatterMaxValue']
+                del data['scatterPeriod']
+                del data['sole']
+                data['smoothness'] = True
+            case 2:
+                print(999)
+                del data['layerThickness']
+                del data['scatterMaxValue']
+                del data['scatterPeriod']
+                del data['scatterAmount']
+        del data['generationType']
+
+
+        print(data)
+        print(type(data))
+
+        # models = layer_models(**data)
+
+        models = layer_models(N=1, NX=100, NY=100, smoothness=True, layerCount=3, scatterPeriod=1, shiftForce=30, side=0, shiftType=0)
+
+        # models = layer_models(N=1, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
+        result = models.save_to_param(skipLast = False, step=1)
+        models.show(limit=1)
 
 
     # print(models.models)
