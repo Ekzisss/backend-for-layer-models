@@ -6,7 +6,7 @@ import csv
 
 
 class layer_models:
-    def __init__(self, N = 1, NY=60, NX=120, layerCount = None, layerThickness=[], layerValues=[],
+    def __init__(self, N = 1, NY=60, NX=120, layerCount = 3, layerThickness=[], layerValues=[],
                   scatterMaxValue=5, scatterPeriod=5, smoothness=False, Y=None, L=None, shiftForce=None,
                   side = None, shiftType = None, shiftCount = 1, multiprocess=False, scatterAmount = [], sole=None, withoutShift=False):
         """
@@ -193,7 +193,7 @@ class layer_models:
         return y
 
 
-    def gen_slice(self, model, L=None, side = random.randint(0,1), Y=None, shiftForce = 15, iterationCount=0):
+    def gen_slice(self, model, L=None, side = random.randint(0,1), shiftType=random.randint(0,1), Y=None, shiftForce = 15, iterationCount=0):
         """
         Function that generate geological fault
         ===
@@ -207,25 +207,16 @@ class layer_models:
         columns = len(model[0])
         rows = len(model)
 
-        shiftType = self.shiftType
-        L = self.L
         if shiftForce == None: shiftForce = 15
 
-        if shiftType == None:
-            shiftType = random.randint(0,1)
         if Y == None:
-            Y = np.random.uniform((columns/2) - (columns/100)*20, (columns/2) + (columns/100)*20)   
+            Y = np.random.uniform((columns/2) - (columns/100)*20, (columns/2) + (columns/100)*20)  
 
-        if (self.shiftCount > 1):
-            if ((side == 0 and shiftType== 1) or (side == 1 and shiftType == 0)):
-                Ystart = np.random.uniform(Y - (Y/100) * 35, Y)
-            else: 
-                Ystart = np.random.uniform(Y, (Y/100) * 35 + Y)
-        else:
-            if ((side == 0 and shiftType== 1) or (side == 1 and shiftType == 0)):
-                Ystart = np.random.uniform(0, Y)
-            else: 
-                Ystart = np.random.uniform(Y, self.NX)
+        # side, shiftType = 0, 0 
+
+        print(f'side - {side}, shiftType - {shiftType}')
+
+        Ystart = -((math.tan(math.radians(L)) * rows/2) - Y)
 
         if (Ystart > self.NX):
             Ystart = self.NX
@@ -303,18 +294,21 @@ class layer_models:
                 model = self.generate_base()
                 if not self.withoutShift:
                     for i in range(self.shiftCount):
-                        sideTemp = self.side
-                        YTemp = self.Y
-                        shiftForceTemp = self.shiftForce
-                        if (type(self.shiftForce) == list):
-                            shiftForceTemp = random.randint(self.shiftForce[0],self.shiftForce[1])
-                        if self.shiftCount > 1:
-                            if (i%self.shiftCount == 0):
-                                YTemp = np.random.uniform((self.NX/100)*10, (self.NX/100)*40)
-                            else:
-                                YTemp = np.random.uniform(self.NX - (self.NX/100)*40, self.NX - (self.NX/100)*10)
-                            sideTemp = self.side[i%self.shiftCount]
-                        model = self.gen_slice(model, side=sideTemp, Y=YTemp, shiftForce=shiftForceTemp, iterationCount=i)
+                        # sideTemp = self.side
+                        # YTemp = self.Y
+                        Ytemp = np.random.uniform(self.Y[0], self.Y[1])
+                        shiftForceTemp = random.randint(self.shiftForce[0],self.shiftForce[1])
+                        Ltemp = np.random.uniform(self.L[0], self.L[1])
+                        print(Ltemp, Ytemp , shiftForceTemp)
+                        # if (type(self.shiftForce) == list):
+                        #     shiftForceTemp = random.randint(self.shiftForce[0],self.shiftForce[1])
+                        # if self.shiftCount > 1:
+                        #     if (i%self.shiftCount == 0):
+                        #         YTemp = np.random.uniform((self.NX/100)*10, (self.NX/100)*40)
+                        #     else:
+                        #         YTemp = np.random.uniform(self.NX - (self.NX/100)*40, self.NX - (self.NX/100)*10)
+                        #     sideTemp = self.side[i%self.shiftCount]
+                        model = self.gen_slice(model, side=self.side, shiftType=self.shiftType, Y=Ytemp, L=Ltemp, shiftForce=shiftForceTemp, iterationCount=i)
                 models.append(model)
         else:
             import multiprocessing
@@ -432,7 +426,7 @@ class layer_models:
         return
     
     def save_to_param(self, skipLast = False, step=2):
-        y = 0.02
+        y = 1
         result = []
         for o in range(len(self.models)):
             modelsThiknes = []
@@ -455,16 +449,24 @@ class layer_models:
 
             print(modelsThiknes)
 
+            # modelsThiknesTotal = np.array([1,2])
+            modelsThiknesTotal = []
+            for i in range(len(modelsThiknes)):
+                # modelsThiknesTotal = np.concatenate(modelsThiknesTotal, modelsThiknes[i])
+                modelsThiknesTotal += modelsThiknes[i].tolist()
+
             if (not self.LSave):
-                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2] , 'nan', 'nan', 'nan', 'nan'])
+                result.append([*modelsThiknesTotal , 'nan', 'nan', 'nan', 'nan'])
             elif (self.shiftCount == 2):
-                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2] , self.LSave[o][0], self.YstartSave[o][0], self.LSave[o][1], self.YstartSave[o][1]])
+                result.append([*modelsThiknesTotal , self.LSave[o][0], self.YstartSave[o][0], self.LSave[o][1], self.YstartSave[o][1]])
             else:
-                result.append([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
+                result.append([*modelsThiknesTotal, self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
         return result
 
 
 # if __name__ == "__main__":
+#     models = layer_models(N= 1, L=[1, 10], Y=[30,60], shiftForce=[10,20], side=1, shiftType=0)
+#     models.show(limit=1)
     # models = layer_models(N = 1, smoothness=True, multiprocess=False, L=-40, side=0, shiftType=0, Y=750, NX=2000, NY=800, shiftForce=200, 
     #                       layerCount=5, layerThickness=[120,83,83,83,1000], scatterAmount=[200,-50])
 #     models = layer_models(N=9, smoothness=True, shiftCount=2, side=[0,1], Y=[40,80], shiftType=0, L=[30,-30])
