@@ -48,8 +48,8 @@ def main(request):
         # models = layer_models(N=1, NX=100, NY=100, smoothness=False, layerCount=5, scatterPeriod=1, shiftForce=30, side=0, shiftType=0)
 
         # models = layer_models(N=1, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
-        result = models.save_to_param(skipLast=skiplast, step=1)
         models.show(limit=1)
+        result = models.save_to_param(skipLast=skiplast, step=1)
 
     response_data = {}
     response_data['result'] = result

@@ -94,7 +94,7 @@ class layer_models:
                     self.layerThickness[index] = val
                     self.layerThickness.append(val)
                 else: break
-
+        print(self.layerThickness)
 
         if (len(self.layerValues) < self.layerCount):
             self.layerValues = []
@@ -212,10 +212,6 @@ class layer_models:
         if Y == None:
             Y = np.random.uniform((columns/2) - (columns/100)*20, (columns/2) + (columns/100)*20)  
 
-        # side, shiftType = 0, 0 
-
-        print(f'side - {side}, shiftType - {shiftType}')
-
         Ystart = -((math.tan(math.radians(L)) * rows/2) - Y)
 
         if (Ystart > self.NX):
@@ -294,20 +290,9 @@ class layer_models:
                 model = self.generate_base()
                 if not self.withoutShift:
                     for i in range(self.shiftCount):
-                        # sideTemp = self.side
-                        # YTemp = self.Y
                         Ytemp = np.random.uniform(self.Y[0], self.Y[1])
                         shiftForceTemp = random.randint(self.shiftForce[0],self.shiftForce[1])
                         Ltemp = np.random.uniform(self.L[0], self.L[1])
-                        print(Ltemp, Ytemp , shiftForceTemp)
-                        # if (type(self.shiftForce) == list):
-                        #     shiftForceTemp = random.randint(self.shiftForce[0],self.shiftForce[1])
-                        # if self.shiftCount > 1:
-                        #     if (i%self.shiftCount == 0):
-                        #         YTemp = np.random.uniform((self.NX/100)*10, (self.NX/100)*40)
-                        #     else:
-                        #         YTemp = np.random.uniform(self.NX - (self.NX/100)*40, self.NX - (self.NX/100)*10)
-                        #     sideTemp = self.side[i%self.shiftCount]
                         model = self.gen_slice(model, side=self.side, shiftType=self.shiftType, Y=Ytemp, L=Ltemp, shiftForce=shiftForceTemp, iterationCount=i)
                 models.append(model)
         else:
@@ -414,8 +399,6 @@ class layer_models:
                 modelsThiknes.append(thikness)
             modelsThiknes = np.transpose(modelsThiknes)
 
-            print(modelsThiknes)
-
             if (not self.LSave):
                 writer.writerow([*modelsThiknes[0], *modelsThiknes[1], *modelsThiknes[2], prefix, 'nan', 'nan', 'nan', 'nan'])
             elif (self.shiftCount == 2):
@@ -437,17 +420,22 @@ class layer_models:
                 layercounter = 0
                 thikness = []
                 for j in range(len(self.models[0])):
+                    print(f'на самом деле - {self.layerValuesSave[o].index(self.models[o][j][i])}; текущий - {layercounter}')
                     if (self.models[o][j][i] != self.layerValuesSave[o][layercounter]):
-                        if (self.layerValuesSave[o].index(self.models[o][j][i]) >= layercounter):
+                        while (self.layerValuesSave[o].index(self.models[o][j][i]) != layercounter):
                             thikness.append(round(counter, 2))
                             layercounter += 1
                     counter += y
+                print('-----------------------------------------')
                 if (not skipLast):
                     thikness.append(round(counter, 2))
+                    print(f'на самом деле - {self.layerValuesSave[o].index(max(self.layerValuesSave[o]))}; текущий - {layercounter}')
+                    while (self.layerValuesSave[o].index(max(self.layerValuesSave[o])) != layercounter):
+                        thikness.append(round(counter, 2))
+                        layercounter += 1
                 modelsThiknes.append(thikness)
-            modelsThiknes = np.transpose(modelsThiknes)
-
             print(modelsThiknes)
+            modelsThiknes = np.transpose(modelsThiknes)
 
             # modelsThiknesTotal = np.array([1,2])
             modelsThiknesTotal = []
