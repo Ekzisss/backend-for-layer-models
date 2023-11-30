@@ -63,7 +63,7 @@ def main(request):
     Host = 'https://layer-models.vercel.app/'
     # Host = 'http://localhost:3000'
 
-    response["Access-Control-Allow-Origin"] = Host
+    response["Access-Control-Allow-Origin"] = '*'
     response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response["Access-Control-Max-Age"] = "1000"
     response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
