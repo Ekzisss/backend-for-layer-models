@@ -56,7 +56,7 @@ def main(request):
 
     response = JsonResponse(response_data)
 
-    Host = 'https://layer-models.vercel.app/'
+    Host = 'https://layer-models.vercel.app'
     # Host = 'http://localhost:3000'
 
     response["Access-Control-Allow-Origin"] = Host
