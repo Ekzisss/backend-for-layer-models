@@ -52,7 +52,7 @@ def main(request):
         result = models.save_to_param(skipLast=skiplast, step=1)
 
     elif request.method == "OPTIONS":
-        print(data)
+        print(request.body)
         result = 'lllllll'
 
     response_data = {}
