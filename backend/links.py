@@ -51,10 +51,6 @@ def main(request):
         models.show(limit=1)
         result = models.save_to_param(skipLast=skiplast, step=1)
 
-    elif request.method == "OPTIONS":
-        print(request.body)
-        result = 'lllllll'
-
     response_data = {}
     response_data['result'] = result
 
@@ -64,4 +60,7 @@ def main(request):
     # Host = 'http://localhost:3000'
 
     response["Access-Control-Allow-Origin"] = '*'
+    response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response["Access-Control-Max-Age"] = "1000"
+    response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
     return response
