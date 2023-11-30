@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-=wep15#5!@#(%sg_0eq@4aj2k%93(91ok4)9ajbg_a)a78*@0q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:3000/', 'layer-backend.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:3000/', 'layer-backend.onrender.com', 'https://layer-models.vercel.app/']
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'https://layer-models.vercel.app/']
 
 
 # Application definition
