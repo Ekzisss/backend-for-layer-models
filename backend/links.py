@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import os
 
 from backend.models_genearateor.main import layer_models
 
@@ -12,8 +13,6 @@ def main(request):
     if request.method == "GET":
         models = layer_models(N=1, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
         result = models.save_to_param(skipLast = True, step=1)
-
-        # models.show(limit=2)
 
         response_data = {}
         response_data['result'] = result
@@ -41,14 +40,8 @@ def main(request):
                 skiplast = True
         del data['generationType']
 
-        print(data)
-
         models = layer_models(**data)
 
-        # models = layer_models(N=1, NX=100, NY=100, smoothness=False, layerCount=5, scatterPeriod=1, shiftForce=30, side=0, shiftType=0)
-
-        # models = layer_models(N=1, NX=15, NY=150, layerCount=4, scatterPeriod=1, sole = [[50, 74], [90, 99], [110, 114], [1000, 1000]], shiftForce=[15,30], side=0, shiftType=0)
-        models.show(limit=1)
         result = models.save_to_param(skipLast=skiplast, step=1)
 
     response_data = {}
@@ -56,8 +49,10 @@ def main(request):
 
     response = JsonResponse(response_data)
 
-    Host = 'https://layer-models.vercel.app'
-    # Host = 'http://localhost:3000'
+    try:
+        Host = os.environ['FRONT_IP']
+    except:
+        Host = 'http://localhost:3000'
 
     response["Access-Control-Allow-Origin"] = Host
     response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
