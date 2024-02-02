@@ -116,8 +116,9 @@ class layer_models:
             if not self.scatterAmount:
                 self.scatterAmount = []
                 for i in range(random.randint(2,3)):
-                    self.scatterAmount.append(random.randint(self.NY/10, self.NY/5) * (1 if random.random() < 0.5 else -1))
+                    self.scatterAmount.append(random.randint(int(self.NY/10), int(self.NY/5)) * (1 if random.random() < 0.5 else -1))
             model.fill(self.layerValues[0])
+            print(self.scatterAmount)
 
             temp = 0
 
@@ -278,12 +279,12 @@ class layer_models:
         
         validation = self.__params_validation(self.layerCount, self.layerThickness, self.layerValues)
 
-        if (validation[0]):
-            raise ValueError(validation[1][0])
+        # if (validation[0]):
+        #     raise ValueError(validation[1][0])
 
-        if (validation[1]):
-            for val in validation[1]:
-                print(val)
+        # if (validation[1]):
+        #     for val in validation[1]:
+        #         print(val)
 
         if not self.multiprocess:
             for o in range(self.N):
