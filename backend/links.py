@@ -23,6 +23,9 @@ def main(request):
                 del data['scatterMaxValue']
                 del data['scatterPeriod']
                 del data['sole']
+                data['scatterAmount'].pop(0)
+                for i in range(len(data['scatterAmount'])):
+                    data['scatterAmount'][i] = -data['scatterAmount'][i]
                 data['smoothness'] = True
             case 2:
                 del data['layerThickness']
