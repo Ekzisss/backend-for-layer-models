@@ -1,16 +1,19 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from dotenv import load_dotenv
 import os
 
 from backend.models_genearateor.main import layer_models
 
 import json
 
+load_dotenv()
+
 @csrf_exempt 
 def main(request):
     result = []
+    print(os.environ['FRONT_IP'])
     if request.method == "POST":
-        print(os.environ.get('FRONT_IP'))
         data = json.loads(request.body)
         print(f'gentype - {data["generationType"]}')
 
@@ -45,10 +48,7 @@ def main(request):
 
     response = JsonResponse(response_data)
 
-    try:
-        Host = os.environ.get('FRONT_IP')
-    except:
-        Host = 'http://localhost:3000'
+    Host = os.environ['FRONT_IP']
 
     response["Access-Control-Allow-Origin"] = Host
     response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
