@@ -10,6 +10,7 @@ import json
 def main(request):
     result = []
     if request.method == "POST":
+        print(os.environ.get('FRONT_IP'))
         data = json.loads(request.body)
         print(f'gentype - {data["generationType"]}')
 
@@ -45,11 +46,11 @@ def main(request):
     response = JsonResponse(response_data)
 
     try:
-        Host = os.environ['FRONT_IP']
+        Host = os.environ.get('FRONT_IP')
     except:
         Host = 'http://localhost:3000'
 
-    response["Access-Control-Allow-Origin"] = '*'
+    response["Access-Control-Allow-Origin"] = Host
     response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response["Access-Control-Max-Age"] = "1000"
     response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
