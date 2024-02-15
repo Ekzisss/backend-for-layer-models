@@ -27,8 +27,9 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:3000/', 'layer-backend.onrender.com', 'https://layer-models.vercel.app/', 'https://layer-models.vercel.app']
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'https://layer-models.vercel.app/', 'https://layer-models.vercel.app']
+# CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'https://layer-models.vercel.app/', 'https://layer-models.vercel.app']
 
 
 # Application definition
