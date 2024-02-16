@@ -276,25 +276,18 @@ class layer_models:
 
     def __gen_models(self):
         models = []
-        
-        validation = self.__params_validation(self.layerCount, self.layerThickness, self.layerValues)
-
-        # if (validation[0]):
-        #     raise ValueError(validation[1][0])
-
-        # if (validation[1]):
-        #     for val in validation[1]:
-        #         print(val)
 
         if not self.multiprocess:
             for o in range(self.N):
                 model = self.generate_base()
                 if not self.withoutShift:
                     for i in range(self.shiftCount):
-                        Ytemp = np.random.uniform(self.Y[0], self.Y[1])
-                        shiftForceTemp = random.randint(self.shiftForce[0],self.shiftForce[1])
-                        Ltemp = np.random.uniform(self.L[0], self.L[1])
-                        model = self.gen_slice(model, side=self.side, shiftType=self.shiftType, Y=Ytemp, L=Ltemp, shiftForce=shiftForceTemp, iterationCount=i)
+                        print(self.Y)
+                        Ytemp = np.random.uniform(self.Y[i][0], self.Y[i][1])
+                        shiftForceTemp = random.randint(self.shiftForce[i][0],self.shiftForce[i][1])
+                        Ltemp = np.random.uniform(self.L[i][0], self.L[i][1])
+                        print(Ytemp)
+                        model = self.gen_slice(model, side=self.side[i], shiftType=self.shiftType[i], Y=Ytemp, L=Ltemp, shiftForce=shiftForceTemp, iterationCount=i)
                 models.append(model)
         else:
             import multiprocessing
@@ -418,33 +411,31 @@ class layer_models:
                 layercounter = 0
                 thikness = []
                 for j in range(len(self.models[0])):
-                    # print(f'на самом деле - {self.layerValuesSave[o].index(self.models[o][j][i])}; текущий - {layercounter}')
                     if (self.models[o][j][i] != self.layerValuesSave[o][layercounter]):
                         while (self.layerValuesSave[o].index(self.models[o][j][i]) != layercounter):
                             thikness.append(round(counter, 2))
                             layercounter += 1
                     counter += y
-                # print('-----------------------------------------')
                 if (not skipLast):
                     thikness.append(round(counter, 2))
-                    # print(f'на самом деле - {self.layerValuesSave[o].index(max(self.layerValuesSave[o]))}; текущий - {layercounter}')
                     while (self.layerValuesSave[o].index(max(self.layerValuesSave[o])) != layercounter):
                         thikness.append(round(counter, 2))
                         layercounter += 1
                 modelsThiknes.append(thikness)
-            # print(modelsThiknes)
             modelsThiknes = np.transpose(modelsThiknes)
 
-            # modelsThiknesTotal = np.array([1,2])
             modelsThiknesTotal = []
             for i in range(len(modelsThiknes)):
-                # modelsThiknesTotal = np.concatenate(modelsThiknesTotal, modelsThiknes[i])
                 modelsThiknesTotal += modelsThiknes[i].tolist()
 
             if (not self.LSave):
-                result.append([*modelsThiknesTotal , 'nan', 'nan', 'nan', 'nan'])
-            elif (self.shiftCount == 2):
-                result.append([*modelsThiknesTotal , self.LSave[o][0], self.YstartSave[o][0], self.LSave[o][1], self.YstartSave[o][1]])
+                result.append([*modelsThiknesTotal])
+            elif (self.shiftCount == 1):
+                result.append([*modelsThiknesTotal, self.LSave[o], self.YstartSave[o]])
             else:
-                result.append([*modelsThiknesTotal, self.LSave[o], self.YstartSave[o], 'nan', 'nan'])
+                tempArr = [*modelsThiknesTotal]
+                for i in range(self.shiftCount):
+                    tempArr.append(self.LSave[o][i])
+                    tempArr.append(self.YstartSave[o][i])
+                result.append(tempArr)
         return result

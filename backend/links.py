@@ -17,6 +17,11 @@ def main(request):
         data = json.loads(request.body)
         print(f'gentype - {data["generationType"]}')
 
+        for i in range(data['shiftCount']):
+            if (data['side'][i] == False): data['side'][i] = 0
+            else: data['side'][i] = 1
+            if (data['shiftType'][i] == False): data['shiftType'][i] = 0
+            else: data['shiftType'][i] = 1
 
         skiplast = False
         match data['generationType']:
