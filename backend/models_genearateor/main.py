@@ -136,7 +136,7 @@ class layer_models:
                         if (i > y):
                             model[i][j] = self.layerValues[o + 1]
         else:
-            if self.sole:
+            if len(self.sole) != 0:
                 prevSole = []
                 for o in self.sole:
                     prevSole.append(random.randint(o[0], o[1]))
