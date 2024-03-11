@@ -27,21 +27,13 @@ def main(request):
         match data['generationType']:
             case 0:
                 del data['scatterAmount']
-                del data['sole']
             case 1:
                 del data['scatterMaxValue']
                 del data['scatterPeriod']
-                del data['sole']
                 data['scatterAmount'].pop(0)
                 for i in range(len(data['scatterAmount'])):
                     data['scatterAmount'][i] = -data['scatterAmount'][i]
                 data['smoothness'] = True
-            case 2:
-                del data['layerThickness']
-                del data['scatterMaxValue']
-                del data['scatterPeriod']
-                del data['scatterAmount']
-                skiplast = True
         del data['generationType']
 
         models = layer_models(**data)
