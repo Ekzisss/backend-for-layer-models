@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = os.environ['DEBUG']
 
-ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:3000/', 'layer-backend.onrender.com', 'https://layer-models.vercel.app/', 'https://layer-models.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'localhost', 'http://localhost:3000/', 'layer-backend.onrender.com', 'https://layer-models.vercel.app/', 'https://layer-models.vercel.app']
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'https://layer-models.vercel.app/', 'https://layer-models.vercel.app']
 

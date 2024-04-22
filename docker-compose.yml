@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  django:
+    image: django-img
+    build: .
+    container_name: django
+    volumes:
+      - .:/app
+
+  gunicorn:
+    image: django-img
+    container_name: 'gunicorn'
+    restart: always
+    command: /bin/sh -c "python3 -m gunicorn -b 0.0.0.0:80 backend.wsgi --reload"
+    volumes:
+      - .:/app
+    ports:
+      - 80:80
+    depends_on:
+      - django
