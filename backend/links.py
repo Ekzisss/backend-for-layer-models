@@ -9,6 +9,7 @@ import json
 
 load_dotenv()
 
+@csrf_exempt 
 def main(request):
     result = []
     print(os.environ['FRONT_IP'])
@@ -47,7 +48,6 @@ def main(request):
     Host = os.environ['FRONT_IP']
 
     response["Access-Control-Allow-Origin"] = Host
-    response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response["Access-Control-Max-Age"] = "1000"
-    response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
+    response["Access-Control-Allow-Methods"] = "POST"
+    response["Access-Control-Allow-Headers"] = "Content-Type"
     return response
