@@ -9,7 +9,6 @@ import json
 
 load_dotenv()
 
-@csrf_exempt 
 def main(request):
     result = []
     print(os.environ['FRONT_IP'])
