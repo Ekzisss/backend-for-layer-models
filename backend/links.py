@@ -12,18 +12,17 @@ load_dotenv()
 @csrf_exempt 
 def main(request):
     result = []
-    print(os.environ['FRONT_IP'])
     if request.method == "POST":
         data = json.loads(request.body)
-        print(f'gentype - {data["generationType"]}')
 
+        # Перевод True/False в 1/0
         for i in range(data['shiftCount']):
             if (data['side'][i] == False): data['side'][i] = 0
             else: data['side'][i] = 1
             if (data['shiftType'][i] == False): data['shiftType'][i] = 0
             else: data['shiftType'][i] = 1
 
-        skiplast = False
+        # Удаление ненужных параметров в зависимости от способа генерации
         match data['generationType']:
             case 0:
                 del data['scatterAmount']
@@ -38,7 +37,7 @@ def main(request):
 
         models = layer_models(**data)
 
-        result = models.save_to_param(skipLast=skiplast, step=1)
+        result = models.save_to_param(skipLast=False, step=1)
 
     response_data = {}
     response_data['result'] = result
