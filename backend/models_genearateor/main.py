@@ -94,7 +94,6 @@ class layer_models:
                     self.layerThickness[index] = val
                     self.layerThickness.append(val)
                 else: break
-        # print(self.layerThickness)
 
         if (len(self.layerValues) < self.layerCount):
             self.layerValues = []
@@ -118,7 +117,6 @@ class layer_models:
                 for i in range(random.randint(2,3)):
                     self.scatterAmount.append(random.randint(int(self.NY/10), int(self.NY/5)) * (1 if random.random() < 0.5 else -1))
             model.fill(self.layerValues[0])
-            print(self.scatterAmount)
 
             temp = 0
 
@@ -282,11 +280,9 @@ class layer_models:
                 model = self.generate_base()
                 if not self.withoutShift:
                     for i in range(self.shiftCount):
-                        print(self.Y)
                         Ytemp = np.random.uniform(self.Y[i][0], self.Y[i][1])
                         shiftForceTemp = random.randint(self.shiftForce[i][0],self.shiftForce[i][1])
                         Ltemp = np.random.uniform(self.L[i][0], self.L[i][1])
-                        print(Ytemp)
                         model = self.gen_slice(model, side=self.side[i], shiftType=self.shiftType[i], Y=Ytemp, L=Ltemp, shiftForce=shiftForceTemp, iterationCount=i)
                 models.append(model)
         else:
@@ -294,8 +290,8 @@ class layer_models:
             models = multiprocessing.Manager().list()
             cores = multiprocessing.cpu_count()
 
-            if (cores > self.N):
-                print('The number of models is less than the number of cores. It is better not to use multiprocessing')
+            # if (cores > self.N):
+            #     print('The number of models is less than the number of cores. It is better not to use multiprocessing')
 
             processes = []
             calc = self.N // cores
@@ -315,7 +311,7 @@ class layer_models:
 
     def multi_sequential(self, index, models, calc, NY, NX, layerCount, layerThickness, layerValues,
                           scatterMaxValue, scatterPeriod, smoothness, Y, L, side, shiftType, shiftForce):
-        print(f"Запускаем поток № {index}")
+        # print(f"Запускаем поток № {index}")
         isDefault = [shiftForce if type(shiftForce)==list else 1 if type(shiftForce)==int else 0,
                      True if layerCount else False,
                      True if L else False] 
@@ -328,7 +324,7 @@ class layer_models:
             model = self.generate_base(layerCount, NY, NX, layerThickness, layerValues, scatterMaxValue, scatterPeriod, smoothness)
             model = self.gen_slice(model, Y, L, shiftForce, side = side if side is None else random.randint(0,1), shiftType = shiftType if shiftType is None else random.randint(0,1))
             models.append(model)
-        print(f"{calc} циклов вычислений закончены. Процессор № {index}")
+        # print(f"{calc} циклов вычислений закончены. Процессор № {index}")
 
 
     def show(self, limit=9, cmap='viridis'):
