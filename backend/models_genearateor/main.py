@@ -8,7 +8,7 @@ import csv
 class layer_models:
     def __init__(self, N = 1, NY=60, NX=120, layerCount = 3, layerThickness=[], layerValues=[],
                   scatterMaxValue=5, scatterPeriod=5, smoothness=False, Y=None, L=None, shiftForce=None,
-                  side = None, shiftType = None, shiftCount = 1, multiprocess=False, scatterAmount = [], sole=None, withoutShift=False):
+                  side = None, shiftType = None, shiftCount = 1, multiprocess=False, scatterAmount = [], sole=None, withoutShift=False, metricPerCell=1):
         """
         Function that generate N models
         ===
@@ -60,6 +60,7 @@ class layer_models:
         self.YstartSave = []
         self.layerValuesSave = []
         self.models = self.__gen_models()
+        self.metricPerCell = metricPerCell
 
 
     def generate_base(self):
@@ -117,9 +118,7 @@ class layer_models:
                 for i in range(random.randint(2,3)):
                     self.scatterAmount.append(random.randint(int(self.NY/10), int(self.NY/5)) * (1 if random.random() < 0.5 else -1))
             model.fill(self.layerValues[0])
-
             temp = 0
-
             for o in range(len(self.layerThickness) - 1):
                 temp += self.layerThickness[o]
 
@@ -159,10 +158,8 @@ class layer_models:
                     prevSole = tempSole
             else:
                 tempThickness = self.layerThickness[:]
-
                 if (self.scatterMaxValue is not list):
                     self.scatterMaxValue = np.full(shape=self.layerCount,  fill_value = self.scatterMaxValue)
-
                 for i in range(self.NY):
                     tempThickness[currentLayer] -= 1
                     if (tempThickness[currentLayer] == 0 and len(self.layerValues) - 1 > currentLayer):
@@ -193,16 +190,6 @@ class layer_models:
 
 
     def gen_slice(self, model, L=None, side = random.randint(0,1), shiftType=random.randint(0,1), Y=None, shiftForce = 15, iterationCount=0):
-        """
-        Function that generate geological fault
-        ===
-        - model - your model
-        - Y - column number of center geological fault (default = +-20% from center)
-        - L - angle of geological fault
-        - shiftForce - force of the geological fault
-        - side - fault side (0 = left ; 1 - right)
-        - shiftType - recession or shift (0 = down ; 1 = up)
-        """
         columns = len(model[0])
         rows = len(model)
 
@@ -396,7 +383,7 @@ class layer_models:
         return
     
     def save_to_param(self, skipLast = False, step=2):
-        y = 1
+        y = self.metricPerCell
         result = []
         for o in range(len(self.models)):
             modelsThiknes = []
@@ -427,11 +414,11 @@ class layer_models:
             if (not self.LSave):
                 result.append([*modelsThiknesTotal])
             elif (self.shiftCount == 1):
-                result.append([*modelsThiknesTotal, self.LSave[o], self.YstartSave[o]])
+                result.append([*modelsThiknesTotal, round(self.LSave[o], 2), round(self.YstartSave[o], 2)])
             else:
                 tempArr = [*modelsThiknesTotal]
                 for i in range(self.shiftCount):
-                    tempArr.append(self.LSave[o][i])
-                    tempArr.append(self.YstartSave[o][i])
+                    tempArr.append(round(self.LSave[o][i],2))
+                    tempArr.append(round(self.YstartSave[o][i],2))
                 result.append(tempArr)
         return result
