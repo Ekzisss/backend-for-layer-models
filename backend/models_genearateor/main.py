@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import random
 import math 
 import csv
+from decimal import Decimal
 
 
 class layer_models:
@@ -365,11 +366,11 @@ class layer_models:
                 for j in range(len(self.models[0])):
                     if (self.models[o][j][i] != self.layerValuesSave[o][layercounter]):
                         if (self.layerValuesSave[o].index(self.models[o][j][i]) >= layercounter):
-                            thikness.append(round(counter, 2))
+                            thikness.append(counter)
                             layercounter += 1
                     counter += y
                 if (not skipLast):
-                    thikness.append(round(counter, 2))
+                    thikness.append(counter)
                 modelsThiknes.append(thikness)
             modelsThiknes = np.transpose(modelsThiknes)
 
@@ -384,6 +385,7 @@ class layer_models:
     
     def save_to_param(self, skipLast = False, step=2):
         y = self.metricPerCell
+        roundPoint = Decimal(str(self.metricPerCell)).as_tuple().exponent*(-1)
         result = []
         for o in range(len(self.models)):
             modelsThiknes = []
@@ -396,13 +398,13 @@ class layer_models:
                 for j in range(len(self.models[0])):
                     if (self.models[o][j][i] != self.layerValuesSave[o][layercounter]):
                         while (self.layerValuesSave[o].index(self.models[o][j][i]) != layercounter):
-                            thikness.append(round(counter, 2))
+                            thikness.append(round(counter,roundPoint))
                             layercounter += 1
                     counter += y
                 if (not skipLast):
-                    thikness.append(round(counter, 2))
+                    thikness.append(round(counter,roundPoint))
                     while (self.layerValuesSave[o].index(max(self.layerValuesSave[o])) != layercounter):
-                        thikness.append(round(counter, 2))
+                        thikness.append(round(counter, roundPoint))
                         layercounter += 1
                 modelsThiknes.append(thikness)
             modelsThiknes = np.transpose(modelsThiknes)
